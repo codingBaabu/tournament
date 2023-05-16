@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Tournament</title>
+  <link rel="stylesheet" href="styles/player_styles.css">
+
+</head>
+
+  <body>
+    
+    <div class="toggles"></div>
+
+    <script>
+        loop = 50;
+        index=0;
+        index2=0;
+        games=[];
+        removedGames=[];
+
+        games.push('tekken', 'sc', 'gb', 'naruto','sf', 'wwe', 'ssbb');
+
+        getRemovedGames();
+        makeCards();
+        gameStatus();
+
+    function getRemovedGames(){
+        if(getCookie('removedGames') != ""){
+
+            let removedGamesCookie = getCookie('removedGames').split(',');
+
+            for(let i = 0 ; i < removedGamesCookie.length ; i++){
+                removedGames.push(Number(removedGamesCookie[i]));
+            }
+            
+        } else {
+            removedGames=[];
+        }
+
+    }
+
+    function makeCards(){
+        let toggle = document.querySelector('.toggles');
+        let toggleCard;
+
+        for(let i = 0 ; i < games.length ; i++){
+            toggleCard = `<button class="${games[i]}Toggle toggleName" 
+            onclick="toggle(${i}, '${games[i]}Toggle')">
+            ${games[i]}</button>`;
+
+            toggle.innerHTML += toggleCard;
+        }
+    }
+
+    function checkForRemovedGames(){
+        let removedGameFound = false;
+
+        for(let i = 0 ; i < games.length ; i++){
+            if(removedGames.includes(i)){
+                removedGameFound=true;
+            }
+        }
+
+        if(!removedGameFound){
+            removedGames = [];
+        }
+    }
+
+    function toggle(index, toggleName){
+        if(removedGames.includes(index)){
+            let removalIndex = removedGames.indexOf(index);
+            removedGames.splice(removalIndex, 1);
+            gameStatus();
+        } else {
+            removedGames.push(index);
+            gameStatus();
+        }
+
+        checkForRemovedGames();   
+        passGames();
+    }
+
+    function passGames(){
+        let activeGames = [];
+        let scores = [];
+
+        for(let i = 0 ; i < games.length ; i++){
+            if(!removedGames.includes(i)){
+                activeGames.push(games[i]);
+            }
+        }
+
+        setCookie('games', activeGames, 1); 
+        setCookie('removedGames', removedGames, 1); 
+    }
+
+    function gameStatus(){
+        for(let i = 0 ; i < games.length ; i++){
+            if(removedGames.includes(i)){
+                document.querySelector(`.${games[i]}Toggle`).style.color = 'grey';        
+
+            } else {
+                document.querySelector(`.${games[i]}Toggle`).style.color = 'green';        
+            }
+        }
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+}
+
+    </script>
+  </body>
+</html>

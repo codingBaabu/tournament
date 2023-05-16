@@ -1,0 +1,43 @@
+body {
+    margin:0;
+    background-color:#111;
+    color:white;
+    overflow:hidden;
+    
+}
+
+.card-container {
+    padding: 3vh 0;
+    text-align:center;
+}
+
+.card {
+    display:block;
+    margin:5vw 0;
+}
+
+body {
+    font-family:Rockwell;
+    font-size: 8vw;        
+}
+
+.go {
+    margin:0;
+    padding:1.5vh 100%;
+    color:white;
+    background-color:#222;
+    border:none;
+
+    position: absolute;
+    top: 0%;
+    -ms-transform: translateY(0%);
+    transform: translateY(0%);  
+   
+    cursor:pointer;
+
+}
+
+.team1, .team2, .team3, .team4 {
+    margin:0;
+    color:gold;
+}

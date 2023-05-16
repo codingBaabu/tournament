@@ -1,0 +1,97 @@
+html, body {
+    height:100%;
+    width:100%;
+}
+body {
+    margin:0;
+    background-color:#111;
+}
+
+.go {
+    position:absolute;
+    top:0;
+    left:0;
+    opacity:.9;
+    margin:0;
+    height:100%;
+    width:100%;
+    color:white;
+    background-color:#222;
+    border:none;
+    cursor:pointer;
+    
+    font-family:Rockwell;
+    font-size: 5vw;
+
+
+}
+
+.card-container {
+    background:rgba(0,0,0,.5);
+
+    position:relative;
+    
+    height:100%;
+    width:100%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.tekken-container, .gb-container, .naruto-container, .sc-container, 
+.sf-container, .wwe-container, .ssbb-container {
+height:0%;
+width:0%;
+
+background-position: center;
+background-repeat: no-repeat;
+background-size: cover;
+}
+
+.game-container {
+height:14.2857143%;
+width:100%;
+}
+
+.tekken-container {  background-image: url('/imgs/tekken.jpg'); }
+.gb-container {  background-image: url('/imgs/gb.jpg'); }
+.sc-container {  background-image: url('/imgs/sc.jpg'); }
+.naruto-container {  background-image: url('/imgs/naruto.jpg'); }
+.sf-container {  background-image: url('/imgs/sf.jpg'); }
+.wwe-container {  background-image: url('/imgs/wwe.jpg'); }
+.ssbb-container {  background-image: url('/imgs/ssbb.jpg'); }
+
+.game-container {
+height:14.2857143%;
+width:100%;
+}
+
+.highlight {
+background-color:gold;
+}
+
+.gamePool {
+    font-size:12px;
+    color:white;
+}
+
+.showMode {
+    position:absolute;
+    display: flex;
+ align-items: center;
+ justify-content: center;
+   
+    bottom: 10px;
+    
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
+
+    font-family:'RodchenkoBTT';
+    font-size:300px;
+    word-wrap: break-word;
+    -webkit-text-stroke: 10px white;
+    text-align:center;
+    }

@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Tournament</title>
+  <link rel="stylesheet" href="styles/3v3_styles.css">
+
+</head>
+
+  <body>
+    <div class="card-container">
+        <div class="cards">
+        </div>
+    </div>
+
+    <button class="go" onclick="init()"></button>
+
+    <script>
+        loop = 50;
+        teams = 0;
+        indexes=[];
+
+        players=[];
+
+        setPlayers();
+
+        makeTeamCards();
+        makePlayerCards();
+
+    function init(){
+        
+        loop = 50;
+
+        for(let i = 0 ; i < players.length ; i++){
+            indexes[i] = 0;
+        }
+
+      
+        drawVersus();
+    }
+
+    
+    function setPlayers(){
+        for(let i = 0 ; i < getCookie('players').split(',').length ; i++){
+            players.push([getCookie('players').split(',')[i]]);
+        }
+    }
+
+    function makeTeamCards(){
+        let cards = document.querySelector('.cards');
+        let card;
+
+        for(let i = 1 ; i <= 2 ; i++){
+            card = `<div class="card card${i}">
+                    <h3 class="team${i}"></h3>`;
+            card+=`</div>`;
+
+            cards.innerHTML += card;
+        }
+    }
+
+    function makePlayerCards(){
+        let card1 = document.querySelector(`.card1`);
+        let card2 = document.querySelector(`.card2`);
+
+        for(let i = 1 ; i <= players.length ; i++){
+            if(i<=players.length/2){
+                card1.innerHTML+=`<div class="player${i}"></div>`;
+            } else {
+                card2.innerHTML+=`<div class="player${i}"></div>`;
+            }
+        }
+    }
+
+    function drawVersus(){
+        setTimeout(()=>{
+           playSound('beep');
+
+        if(loop>=0){
+            
+            loop--;
+
+            matchingPlayersCheck();
+
+            let teamCount = 1;
+            for(let i = 1 ; i <= 2 ; i++){
+                
+                document.querySelector(`.team${i}`).innerText = `Team ${i}`;
+
+                for(let i2 = 1 ; i2 <= players.length ; i2++){
+                    if(i<=players.length/2){
+                        document.querySelector(`.player${i2}`).innerText = `${players[indexes[i2-1]]}`;
+                    } else {
+                        document.querySelector(`.player${i2}`).innerText = `${players[indexes[i2-1]]}`;
+                    }                    
+                }
+            }
+            
+            drawVersus();
+            
+        } else {
+           playSound('ding'); 
+        }
+    }, 50);
+    }      
+
+    function matchingPlayersCheck(){
+        let same = true;
+        
+        do {
+            same = false;
+            for(let i = 0 ; i < players.length ; i++){
+                indexes[i] = Math.floor(Math.random() * players.length);
+            }
+
+            for(let i = 0 ; i < players.length ; i++){
+                for(let i2 = 0 ; i2 < players.length ; i2++){
+                    if(i!=i2){
+                        if(indexes[i] == indexes[i2]){
+                            same = true;
+                        } 
+                    }
+                } 
+            }
+        } while(same == true);
+    }
+
+    function playSound(fileName){
+        let sound = document.createElement("AUDIO");
+        sound.setAttribute("src",`sounds/${fileName}.mp3`);
+        sound.play(); 
+    }
+
+    
+    function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+}
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Tournament</title>
+  <link rel="stylesheet" href="styles/2v2_styles.css">
+
+</head>
+
+  <body>
+    <div class="card-container">
+        <div class="cards">
+        </div>
+    </div>
+
+    <button class="go" onclick="init()"></button>
+
+    <script>
+        loop = 50;
+        teams = 0;
+        indexes=[];
+        players=[];
+        setPlayers();
+    
+    function init(){
+        
+        loop = 50;
+
+        for(let i = 0 ; i < players.length ; i++){
+            indexes[i] = 0;
+        }
+
+        makeCards();
+        drawVersus(players);
+    }
+
+    function setPlayers(){
+        for(let i = 0 ; i < getCookie('players').split(',').length ; i++){
+            players.push([getCookie('players').split(',')[i]]);
+        }
+    }
+
+    function makeCards(){
+        let cards = document.querySelector('.cards');
+        let card;
+
+        let teamNumber=1;
+        for(let i = 1 ; i <= players.length ; i+=2){
+            card = `<div class="card">
+                <h3 class="team${teamNumber}"></h3>
+                <div class="player${i}"></div>
+                <div class="player${i+1}"></div>
+            </div>`;
+
+            cards.innerHTML += card;
+
+            teamNumber++;
+            teams++;
+        }
+    }
+
+    function drawVersus(){
+        setTimeout(()=>{
+            playSound('beep');
+
+        if(loop>=0){
+            
+            loop--;
+
+            matchingPlayersCheck();
+
+            let teamCount = 1;
+            for(let i = 1 ; i <= players.length ; i+=2){
+                document.querySelector(`.team${teamCount}`).innerText = `Team ${teamCount}`;
+                document.querySelector(`.player${i}`).innerText = `${players[indexes[i-1]]}`;
+                
+                document.querySelector(`.player${i+1}`).innerText = players[indexes[i]]==undefined ? '-' : `${players[indexes[i]]}`;
+            
+                teamCount++;
+            }
+            
+            drawVersus();
+            
+        } else {
+            playSound('ding');
+        }
+    }, 50);
+    }      
+
+    function matchingPlayersCheck(){
+        let same = true;
+        
+        do {
+            same = false;
+            for(let i = 0 ; i < players.length ; i++){
+                indexes[i] = Math.floor(Math.random() * players.length);
+            }
+
+            for(let i = 0 ; i < players.length ; i++){
+                for(let i2 = 0 ; i2 < players.length ; i2++){
+                    if(i!=i2){
+                        if(indexes[i] == indexes[i2]){
+                            same = true;
+                        } 
+                    }
+                } 
+            }
+        } while(same == true);
+    }
+
+    function playSound(fileName){
+        let sound = document.createElement("AUDIO");
+        sound.setAttribute("src",`sounds/${fileName}.mp3`);
+        sound.play(); 
+    }
+
+    
+    function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+}
+
+    </script>
+  </body>
+</html>

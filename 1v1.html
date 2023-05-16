@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Tournament</title>
+  <link rel="stylesheet" href="styles/1v1_styles.css">
+
+</head>
+
+  <body>
+    <div class="card-container">
+        <div class="cards">
+            <div class="player1"></div>
+            <h3 class="vs"></h3>
+            <div class="player2"></div>
+        </div>
+    </div>
+
+    <button class="go" onclick="init()">GO</button>
+    
+    <div class="toggles"></div>
+
+    <script>
+        loop = 50;
+        index=0;
+        index2=0;
+        players=[];
+        removedPlayers=[];
+
+        setPlayers();
+  
+        makeCards();
+
+    function init(){
+        loop = 50;
+        index=0;
+        index2=0;
+       
+        checkForRemovedNames();       
+        drawPVP(players);
+    }
+
+    function setPlayers(){
+        for(let i = 0 ; i < getCookie('players').split(',').length ; i++){
+            players.push([getCookie('players').split(',')[i]]);
+        }
+    }
+
+    function makeCards(){
+        let toggle = document.querySelector('.toggles');
+        let toggleCard;
+
+        for(let i = 0 ; i < players.length ; i++){
+            toggleCard = `<button class="${players[i]}Toggle toggleName" 
+            onclick="toggle(${i}, '${players[i]}Toggle')">
+            ${players[i]}</button>`;
+
+            toggle.innerHTML += toggleCard;
+        }
+    }
+
+    function checkForRemovedNames(){
+        let removedGameFound = false;
+
+        for(let i = 0 ; i < players.length ; i++){
+            if(removedPlayers.includes(i)){
+                removedGameFound=true;
+            }
+        }
+
+        if(!removedGameFound){
+            removedPlayers = [];
+        }
+    }
+
+    function toggle(index, toggleName){
+        if(removedPlayers.includes(index)){
+            let removalIndex = removedPlayers.indexOf(index);
+            removedPlayers.splice(removalIndex, 1);
+            playerStatus(toggleName, true);
+        } else {
+            removedPlayers.push(index);
+            playerStatus(toggleName, false);
+        }
+    }
+
+    function playerStatus(toggleName, active){
+        let playerToggle = document.querySelector(`.${toggleName}`);
+        if(active){
+            playerToggle.style.color = 'green';        
+        } else {
+            playerToggle.style.color = 'grey';        
+        }
+    }
+
+    function matchingPlayersCheck(){
+        let same = true;
+        
+        while(same == true){
+            index = Math.floor(Math.random() * players.length);
+            index2 = Math.floor(Math.random() * players.length);
+            
+            if(index!=index2 
+            && !removedPlayers.includes(index)
+            && !removedPlayers.includes(index2)){
+                same=false;
+            }
+        }
+    }
+
+    function drawPVP(){
+        setTimeout(()=>{
+           playSound('beep');
+
+        if(loop>=0){           
+            loop--;
+
+            matchingPlayersCheck();
+            
+            let player1 = document.querySelector('.player1');
+            let vs = document.querySelector('.vs');
+            let player2 = document.querySelector('.player2');
+           
+            player1.innerText = `${players[index]}`;
+            vs.innerText = `vs`;
+            player2.innerText = `${players[index2]}`;
+            
+            drawPVP(players);
+            
+        } else {
+           playSound('ding');  
+        }
+    }, 50);
+    }      
+
+    function playSound(fileName){
+        let sound = document.createElement("AUDIO");
+        sound.setAttribute("src",`sounds/${fileName}.mp3`);
+        sound.play(); 
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+}
+
+    </script>
+  </body>
+</html>

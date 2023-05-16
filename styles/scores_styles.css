@@ -1,0 +1,109 @@
+html, body {
+    margin:0;
+    padding:0;
+    background-color:#111;
+    color:white;
+   height:100%;
+text-align: center;
+}
+
+.card-container {
+    margin:0;
+    padding:0;
+    display:inline-grid;
+    grid-template-columns: 25% 50% 25%;   
+    grid-template-rows: auto;   
+
+    background-image: url('/imgs/ww.jpg');
+    min-height:100%;
+    width:100%;
+
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+  
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background-color:#111;
+    background:rgba(11,11,11,.9);
+    width:100%;
+
+}
+
+.ppPosition1, .card1 {
+    padding-top:4%;
+}
+
+.ppHolder {
+    width:100%;
+    position:relative;
+ }
+ 
+ .pp1, .pp2, .pp3, .pp4, .pp5, .pp6, .pp7, .pp8, .pp9 {
+     max-width:65%;
+     border-radius:50%;
+     object-fit:cover;
+ }
+
+.points-card {
+    display:inline-block;
+    margin:1vw;       
+}
+
+.go {
+    margin:0;
+    padding:2vh 10vw;
+    color:white;
+    background-color:#222;
+    border:none;
+}
+
+.playerPool {
+    font-size:12px;
+    color:white;
+}
+
+.subtract {
+    background-color: transparent;
+    color:#bd2031;
+    border:0;
+}
+
+
+.add {
+    background-color: transparent;
+    color:#a4de02;
+    border:0;
+}
+
+.player {
+    -webkit-text-stroke: .3vw #111;
+}
+
+.subtract, .add {
+    opacity:.5;
+    margin:0 10px;
+    font-size: 5vw;
+    cursor:pointer;
+    
+}
+
+.player {
+    position:absolute;
+    bottom:2vh;
+    left:0;
+    right:0;
+    font-family:'Radio Stars';
+    font-size: 4.6vw;
+}
+
+.score {
+    font-family:'Ember Regular';
+    font-size: 9vw;
+}
+

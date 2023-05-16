@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Tournament</title>
+  <link rel="stylesheet" href="styles/scores_styles.css">
+
+</head>
+
+  <body>
+    <div class="card-container">
+
+    <script>
+        hp=4000;
+        activePlayer='';
+        oldLocation=0;
+        blinking=false;
+        click=true;
+        loop = 50;
+        initPlayers=[];
+        players=[];
+        start=true;
+
+    setPlayers();
+    init();
+
+    function init(){
+        makeCards();   
+        positionPP();
+        drawPlayerStats(players);
+    }
+
+    function setPlayers(){
+        let getHP=[];
+
+        if(getCookie('scores').split(',').length != getCookie('players').split(',').length){
+            setCookie('scores', [], 1);
+
+            for(let i = 0 ; i < getCookie('players').split(',').length ; i++){
+                getHP.push(hp);
+            }
+        } else {
+            for(let i = 0 ; i < getCookie('players').split(',').length ; i++){
+                getHP.push(Number(getCookie('scores').split(',')[i]));
+            }
+        }
+
+        for(let i = 0 ; i < getCookie('players').split(',').length ; i++){
+            players.push([getCookie('players').split(',')[i], getHP[i]]);
+            initPlayers.push([getCookie('players').split(',')[i], getHP[i]]);
+        }
+    }
+
+    function passHP(){
+        let hpPass=[];
+        let playersPass=[];
+
+            for(let i = 0 ; i < players.length ; i++){
+                hpPass.push(players[i][1]);
+                playersPass.push(players[i][0]);
+            }
+            setCookie('players', playersPass, 1);
+            setCookie('scores', hpPass, 1);
+    }
+
+    function makeCards(){
+        let cards = document.querySelector('.card-container');
+        let pp, card, blank;
+        let ppArray=[];
+
+        for(let i = 0 ; i < players.length ; i++){
+            ppArray.push(document.querySelectorAll(`.pp`));
+        }
+
+        for(let i = 0 ; i < players.length ; i++){
+            pp = `<div class="ppHolder ppPosition${i+1}">
+                <img src="imgs/pp${i+1}.png" class="pp pp${i+1}" >
+                <div class="player${i+1} player"></div>
+                </div>`;
+
+                if(i==0){
+                    blank = `<div class="third"><button class="reset" onclick="resetScores();">Reset</button></div>`;
+                } else {
+                    blank = `<div class="third"></div>`;
+                }
+
+            card = `<div class="card card${i+1}">
+                        <div class="stats-container">
+                            <div class="score${i+1} score"></div>
+
+                            <button class="btn${i+1} subtract" onclick="subtractPoints(${i}, 10, 10)">-</button>
+                            <button class="btn${i+1} subtract" onclick="subtractPoints(${i}, 20, 10)">--</button>
+                            <button class="btn${i+1} subtract" onclick="subtractPoints(${i}, 40, 25)">---</button>
+                            <button class="btn${i+1} add" onclick="addPoints(${i})">+</button>
+                        </div>
+                    </div>`;
+
+            if(i < players.length/2) cards.innerHTML += pp; 
+            else cards.innerHTML += blank;
+
+            cards.innerHTML += card;
+        
+            if(i < players.length/2) cards.innerHTML += blank;
+            else cards.innerHTML += pp;
+        }
+    }
+
+    function loseSound(){
+        for(let i = 0 ; i < players.length ; i++){
+            if(players[i][1] <= 0){
+               playSound('lose');
+            }
+        }
+    }
+
+    function resetScores(){
+        for(let i = 0 ; i < players.length ; i++){
+            players[i][1] = hp;
+            drawPlayerStats(players);
+        }
+    }
+
+    function losePic(playerIndex){
+        let pic;
+        for(let i = 0 ; i < players.length ; i++){
+                if(players[playerIndex][0]==initPlayers[i][0]){
+                pic = document.querySelector(`.pp${i+1}`);    
+            }
+        }
+
+        setTimeout(()=>{
+            pic.style.opacity = '.2';
+        }, 1500);
+    }
+
+    function subtractPoints(playerIndex, loopCount, decrement){
+        activePlayer = players[playerIndex];
+        oldLocation = playerIndex;
+
+        if(click==true){
+            click = false;
+            subtractLoopCount = loopCount;
+            subtractLoop(playerIndex, subtractLoopCount, decrement);
+        }
+    }
+
+    function subtractLoop(playerIndex, subtractLoopCount, decrement){
+        setTimeout(()=>{
+            playSound('beepq');
+
+            players[playerIndex][1]-=decrement;
+            drawPlayerStats(players);
+        
+        if(subtractLoopCount > 1 && players[playerIndex][1]>0){
+            subtractLoop(playerIndex, subtractLoopCount-1, decrement);
+        } else {
+            
+            if(players[playerIndex][1]<=0){
+                players[playerIndex][1] = 0;
+                loseSound();         
+                losePic(playerIndex);    
+            }
+
+            players.sort(compareSecondColumn);
+            blink();
+
+            passHP();
+
+            drawPlayerStats(players);
+            click = true;
+
+           playSound('ebeep');
+        }
+      },100);
+    }
+
+    function addPoints(playerIndex){
+        activePlayer = players[playerIndex];
+        oldLocation = playerIndex;
+    
+        if(click==true){
+            click = false;
+            addLoopCount = 20;
+            addLoop(playerIndex, addLoopCount);
+        }
+    }
+
+    function addLoop(playerIndex, addLoopCount){
+        setTimeout(()=>{
+            playSound('beepq');
+
+            players[playerIndex][1]+=10;
+            drawPlayerStats(players);
+        
+        if(addLoopCount > 1){
+            addLoop(playerIndex, addLoopCount-1);
+        } else {
+            players.sort(compareSecondColumn);
+            blink();
+
+            passHP();
+
+            drawPlayerStats(players);
+            click = true;
+
+            playSound('ebeep');
+        }
+    },100);
+    }
+
+function compareSecondColumn(a, b) {
+    
+    if (a[1] === b[1]) {
+        return 0;
+    }
+    else {
+        return (a[1] > b[1]) ? -1 : 1;
+    }
+}
+
+function blink(){
+    blinking = true;
+
+    let activePlayerID = players.indexOf(activePlayer);
+
+    let activePlayerDiv = document.querySelector(`.player${players.indexOf(activePlayer) + 1}`);
+    let activeScoresDiv = document.querySelector(`.score${players.indexOf(activePlayer) + 1}`);
+    
+    let statsDiv = document.querySelectorAll(`.card${activePlayerID+1}`)
+    .forEach(btn => btn.style.background = 'rgba(77,77,150,.9)');
+
+    positionPP();
+
+    setTimeout(()=>{
+    setColors();
+    blinking = false;
+  
+
+    let statsDiv = document.querySelectorAll(`.card${activePlayerID+1}`)
+    .forEach(btn => btn.style.background = 'rgba(11,11,11,.9)');  
+
+    }, 800);
+}
+
+function getIndex(myArray, check){
+    for(let i = 0; i < myArray.length; i++) {
+        if(myArray[i][0] == check) {
+            return i;
+        }
+    }
+}
+
+function positionPP(){
+    let playerPPs=[];
+    let playerIndexes=[];
+    let positions=[];
+    let ppPositions=[];
+
+    console.log('PICookie - ' + getCookie('playerIndexes'));
+    console.log('ScoresCookie - ' + getCookie('scores'));
+    console.log('PlayersCookie - ' + getCookie('players'));
+
+    for(let i = 0 ; i < players.length ; i++){
+        
+        if( getCookie('playerIndexes').split(',').length>0 && 
+            getCookie('playerIndexes').split(',').length == getCookie('players').split(',').length &&
+            getCookie('playerIndexes') != '' &&    
+            start==true){
+
+               playerIndexes.push(Number(getCookie('playerIndexes').split(',')[i]));        
+        } else {
+            playerIndexes.push(getIndex(players, getCookie('initPlayers').split(',')[i]));
+        }
+
+        playerPPs.push(document.querySelector(`.pp${i+1}`));
+        ppPositions.push(document.querySelector(`.ppPosition${i+1}`));
+
+        positions.push(`imgs/pp${i+1}.png`);
+
+     
+    }
+
+    let temp;
+    for(let i = 0 ; i < players.length ; i++){
+        ppPositions[playerIndexes[i]].appendChild(playerPPs[i]);
+    }
+
+    setCookie('playerIndexes', playerIndexes, 1);
+    start = false;
+    //console.log('PI - ' + playerIndexes);
+   
+
+}
+
+    function drawPlayerStats(names){
+        if(loop>=0){
+            
+            for(let i = 0 ; i < players.length ; i++){
+                document.querySelector(`.player${i+1}`).innerText = `${names[i][0]}`;
+                document.querySelector(`.score${i+1}`).innerText = `${names[i][1]}`;
+            }
+          
+            if(!blinking) 
+            setColors();
+            
+            makeTextBigger();
+        } 
+    }      
+
+    function makeTextBigger(){
+        if(players.length <= 7){
+                //document.querySelectorAll(`.player`).forEach(player => player.style.fontSize = '3.1vh');
+                //document.querySelectorAll(`.score`).forEach(score => score.style.fontSize = '4.4vh');
+
+                //document.querySelectorAll(`.pp`)
+                //.forEach(pp => pp.style.maxWidth = '100%');
+            }
+
+    }
+
+    function setColors(){
+        let temp='';
+        let player1 = document.querySelector('.player1');
+        let player2 = document.querySelector('.player2');
+        
+        let score1 = document.querySelector('.score1');
+        let score2 = document.querySelector('.score2');
+
+        for(let i = 0 ; i < players.length ; i++){
+            temp = document.querySelector(`.player${i+1}`);
+            tempScore = document.querySelector(`.score${i+1}`);
+            if(players[i][1] > 2500 && i == 0
+            || players[i][1] > 2500 && i == 1
+            ){
+                player1.style.color = '#a4de02';
+                score1.style.color = '#a4de02'; 
+
+                player2.style.color = '#a4de02';
+                score2.style.color = '#a4de02'; 
+            }
+            else if(players[i][1] < 1000){
+                temp.style.color = '#bd2031';
+                tempScore.style.color = '#bd2031'; 
+            } else if(players[i][1] < 2500){
+                temp.style.color = 'orange';
+                tempScore.style.color = 'orange'; 
+            } else {
+                temp.style.color = 'white';
+                tempScore.style.color = 'white';
+            }
+        }
+    }
+
+    function playSound(fileName){
+        let sound = document.createElement("AUDIO");
+        sound.setAttribute("src",`sounds/${fileName}.mp3`);
+        sound.play(); 
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+}
+
+    </script>
+  </body>
+</html>

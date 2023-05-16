@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Tournament</title>
+  <link rel="stylesheet" href="styles/player_styles.css">
+
+</head>
+
+  <body>
+    
+    <div class="toggles"></div>
+
+    <script>
+        loop = 50;
+        index=0;
+        index2=0;
+        players=[];
+        removedPlayers=[];
+
+        players.push('Ravin', 'Daniel', 'Marcus', 'Valon', 'Kieron', 'Jason', 'Wilton', 'Ranvir');
+
+        getRemovedPlayers();
+        makeCards();
+        playerStatus();
+
+    function getRemovedPlayers(){
+        if(getCookie('removedPlayers') != ""){
+
+            let removedPlayersCookie = getCookie('removedPlayers').split(',');
+
+            for(let i = 0 ; i < removedPlayersCookie.length ; i++){
+                removedPlayers.push(Number(removedPlayersCookie[i]));
+            }
+            
+        } else {
+            removedPlayers=[];
+        }
+
+    }
+
+    function makeCards(){
+        let toggle = document.querySelector('.toggles');
+        let toggleCard;
+
+        for(let i = 0 ; i < players.length ; i++){
+            toggleCard = `<button class="${players[i]}Toggle toggleName" 
+            onclick="toggle(${i}, '${players[i]}Toggle')">
+            ${players[i]}</button>`;
+
+            toggle.innerHTML += toggleCard;
+        }
+    }
+
+    function checkForRemovedNames(){
+        let removedNameFound = false;
+
+        for(let i = 0 ; i < players.length ; i++){
+            if(removedPlayers.includes(i)){
+                removedNameFound=true;
+            }
+        }
+
+        if(!removedNameFound){
+            removedPlayers = [];
+        }
+    }
+
+    function toggle(index, toggleName){
+        if(removedPlayers.includes(index)){
+            let removalIndex = removedPlayers.indexOf(index);
+            removedPlayers.splice(removalIndex, 1);
+            playerStatus();
+        } else {
+            removedPlayers.push(index);
+            playerStatus();
+        }
+
+        checkForRemovedNames();   
+        passPlayers();
+    }
+
+    function passPlayers(){
+        let activePlayers = [];
+        let scores = [];
+
+        for(let i = 0 ; i < players.length ; i++){
+            if(!removedPlayers.includes(i)){
+                activePlayers.push(players[i]);
+                scores.push(4000);
+            }
+        }
+
+        setCookie('players', activePlayers, 1); 
+        setCookie('initPlayers', activePlayers, 1); 
+        setCookie('removedPlayers', removedPlayers, 1); 
+
+        setCookie('scores', scores, 1); 
+            
+    }
+
+    function playerStatus(){
+        for(let i = 0 ; i < players.length ; i++){
+            if(removedPlayers.includes(i)){
+                document.querySelector(`.${players[i]}Toggle`).style.color = 'grey';        
+
+            } else {
+                document.querySelector(`.${players[i]}Toggle`).style.color = 'green';        
+            }
+        }
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+}
+
+    </script>
+  </body>
+</html>
