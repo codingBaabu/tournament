@@ -14,7 +14,7 @@ text-align: center;
     grid-template-columns: 25% 50% 25%;   
     grid-template-rows: auto;   
 
-    background-image: url('/imgs/ww.jpg');
+    background-image: url('imgs/ww.jpg');
     min-height:100%;
     width:100%;
 
